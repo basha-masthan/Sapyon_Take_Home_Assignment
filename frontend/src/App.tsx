@@ -457,10 +457,10 @@ export default function App() {
   const isAdmin = activeCtx?.role === 'agency_admin';
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#0b0d19' }}>
+    <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: '#0b0d19' }}>
       
       {/* SIDEBAR */}
-      <aside style={{ width: '280px', borderRight: '1px solid var(--border-color)', background: 'rgba(19, 23, 42, 0.8)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <aside style={{ width: '280px', height: '100vh', flexShrink: 0, borderRight: '1px solid var(--border-color)', background: 'rgba(19, 23, 42, 0.8)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Layers color="#6366f1" size={28} />
           <h2 style={{ fontSize: '1.25rem', color: '#f8fafc' }}>AgencyDesk</h2>
@@ -481,7 +481,7 @@ export default function App() {
         </div>
 
         {/* PROJECTS LIST */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1, overflowY: 'auto' }}>
           <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 'bold', textTransform: 'uppercase' }}>Projects</label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {projects.map(proj => (
@@ -500,7 +500,7 @@ export default function App() {
         </div>
 
         {/* USER PROFILE */}
-        <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px', marginTop: 'auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ padding: '8px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '50%' }}>
               <User size={20} color="var(--text-secondary)" />
@@ -517,7 +517,7 @@ export default function App() {
       </aside>
 
       {/* MAIN VIEW */}
-      <main style={{ flex: 1, padding: '40px', display: 'flex', flexDirection: 'column', gap: '30px', overflowY: 'auto' }}>
+      <main style={{ flex: 1, height: '100vh', padding: '40px', display: 'flex', flexDirection: 'column', gap: '30px', overflowY: 'auto' }}>
         
         {/* HEADER */}
         {selectedProject ? (

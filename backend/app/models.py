@@ -1,6 +1,6 @@
 import datetime
 import enum
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Text, Enum, Float
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Text, Enum, Float, UniqueConstraint
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -43,6 +43,8 @@ class AgencyMembership(Base):
     agency_id = Column(Integer, ForeignKey("ad_agencies.id"), nullable=False)
     role = Column(Enum(Role), nullable=False)
     
+    __table_args__ = (UniqueConstraint("user_id", "agency_id", name="uq_agency_member"),)
+    
     user = relationship("User", back_populates="agency_memberships")
     agency = relationship("Agency", back_populates="memberships")
 
@@ -61,6 +63,8 @@ class ClientMembership(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("ad_users.id"), nullable=False)
     client_id = Column(Integer, ForeignKey("ad_clients.id"), nullable=False)
+
+    __table_args__ = (UniqueConstraint("user_id", "client_id", name="uq_client_member"),)
 
     user = relationship("User", back_populates="client_memberships")
     client = relationship("Client", back_populates="memberships")
@@ -83,6 +87,8 @@ class ProjectMember(Base):
     id = Column(Integer, primary_key=True, index=True)
     project_id = Column(Integer, ForeignKey("ad_projects.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("ad_users.id"), nullable=False)
+
+    __table_args__ = (UniqueConstraint("project_id", "user_id", name="uq_project_member"),)
 
     project = relationship("Project", back_populates="project_members")
     user = relationship("User")

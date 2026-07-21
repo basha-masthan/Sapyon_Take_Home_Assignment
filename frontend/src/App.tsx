@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
-  Briefcase, Users, CheckCircle2, Clock, Plus, LogOut, X, 
-  MessageSquare, Paperclip, AlertTriangle, User, Lock, 
-  Settings, ShieldAlert, Check, RefreshCw, Layers
+  Briefcase, CheckCircle2, Clock, Plus, LogOut, X, 
+  MessageSquare, Paperclip, User, ShieldAlert, Layers
 } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';

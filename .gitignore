@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Virtual environments
+backend/venv/
+frontend/node_modules/
+
+# Environment files
+.env
+*.env
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*~

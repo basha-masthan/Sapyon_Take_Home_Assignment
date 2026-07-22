@@ -8,12 +8,12 @@ async def test_isolation():
         print("--- Testing Tenant Isolation ---")
         
         # 1. Login as Admin A
-        resp_a = await client.post("/api/auth/token", data={"username": "admin@agencya.com", "password": "password"})
+        resp_a = await client.post("/api/auth/login", data={"username": "admin@agencya.com", "password": "password"})
         token_a = resp_a.json()["access_token"]
         headers_a = {"Authorization": f"Bearer {token_a}", "X-Agency-ID": "1"} # Assuming agency 1 is A
         
         # 2. Login as Admin B
-        resp_b = await client.post("/api/auth/token", data={"username": "admin@agencyb.com", "password": "password"})
+        resp_b = await client.post("/api/auth/login", data={"username": "admin@agencyb.com", "password": "password"})
         token_b = resp_b.json()["access_token"]
         headers_b = {"Authorization": f"Bearer {token_b}", "X-Agency-ID": "2"} # Assuming agency 2 is B
         
@@ -47,7 +47,7 @@ async def test_isolation():
         print(f"Admin A sees {len(all_tasks)} tasks on Project A: {[t['title'] for t in all_tasks]}")
         
         # Login as Client (Client Corp A)
-        resp_c = await client.post("/api/auth/token", data={"username": "client@example.com", "password": "password"})
+        resp_c = await client.post("/api/auth/login", data={"username": "client@example.com", "password": "password"})
         token_c = resp_c.json()["access_token"]
         
         # Get clients for user

@@ -869,7 +869,7 @@ export default function App() {
                     {files.map(f => (
                       <div key={f.id} style={{ background: 'rgba(255,255,255,0.02)', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <a href={`${API_BASE}/${f.file_path}`} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none' }}>{f.filename}</a>
+                          <a href={f.file_path} download={f.filename} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none' }}>{f.filename}</a>
                           {f.is_internal && <span className="badge badge-internal" style={{ fontSize: '0.6rem' }}>Internal</span>}
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

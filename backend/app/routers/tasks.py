@@ -5,6 +5,7 @@ from typing import List, Optional
 from datetime import datetime
 import os
 import time
+import base64
 
 from .. import schemas, models, database
 from ..deps import get_current_tenant
@@ -193,27 +194,31 @@ async def upload_file(
     project_id: int,
     task_id: int,
     file: UploadFile = File(...),
-    is_internal: bool = Form(False),
+    is_internal: str = Form("false"),
     db: AsyncSession = Depends(database.get_db),
     tenant_ctx: dict = Depends(get_current_tenant)
 ):
     await get_project(project_id, db, tenant_ctx)
-    
-    if tenant_ctx["role"] == models.Role.client_user:
-        is_internal = False # Clients upload client-visible files
 
-    safe_filename = f"{int(time.time())}_{file.filename}"
-    file_path = f"uploads/{safe_filename}"
-    
-    with open(file_path, "wb") as buffer:
-        buffer.write(await file.read())
+    # Coerce string form value to bool (FormData always sends strings)
+    is_internal_bool = is_internal.lower() in ("true", "1", "yes")
+
+    if tenant_ctx["role"] == models.Role.client_user:
+        is_internal_bool = False  # Clients upload client-visible files
+
+    # Read file content and store as base64 data URL
+    # (Render's filesystem is ephemeral; storing in DB ensures persistence)
+    file_bytes = await file.read()
+    content_type = file.content_type or "application/octet-stream"
+    b64_content = base64.b64encode(file_bytes).decode("utf-8")
+    file_path = f"data:{content_type};base64,{b64_content}"
 
     db_file = models.TaskFile(
         task_id=task_id,
         uploader_id=tenant_ctx["user"].id,
         filename=file.filename,
         file_path=file_path,
-        is_internal=is_internal,
+        is_internal=is_internal_bool,
         approval_status=models.ApprovalStatus.pending
     )
     db.add(db_file)

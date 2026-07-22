@@ -120,6 +120,7 @@ export default function App() {
 
   const [showAddMember, setShowAddMember] = useState(false);
   const [newMemberId, setNewMemberId] = useState('');
+  const [agencyUsers, setAgencyUsers] = useState<UserObj[]>([]);
 
   // Setup Axios Defaults
   useEffect(() => {
@@ -146,13 +147,15 @@ export default function App() {
     }
   }, [token]);
 
-  // Load projects when active context changes
+  // Load projects and agency users when active context changes
   useEffect(() => {
     if (activeCtx) {
       fetchProjects();
+      fetchAgencyUsers();
     } else {
       setProjects([]);
       setSelectedProject(null);
+      setAgencyUsers([]);
     }
   }, [activeCtx]);
 
@@ -199,6 +202,19 @@ export default function App() {
       }
     } catch (err) {
       console.error("Failed to load projects", err);
+    }
+  };
+
+  const fetchAgencyUsers = async () => {
+    if (!activeCtx || activeCtx.role === 'client_user') {
+      setAgencyUsers([]);
+      return;
+    }
+    try {
+      const res = await axios.get(`${API_BASE}/api/projects/agency-users`);
+      setAgencyUsers(res.data);
+    } catch (err) {
+      console.error("Failed to load agency users", err);
     }
   };
 
@@ -763,9 +779,32 @@ export default function App() {
 
             <form onSubmit={handleAddMember} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Member User ID</label>
-                <input required type="number" value={newMemberId} onChange={e => setNewMemberId(e.target.value)} placeholder="e.g. 3" />
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Enter the user ID from the active agency (e.g. Member A is ID 3).</p>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Select Agency Member</label>
+                <select 
+                  required 
+                  value={newMemberId} 
+                  onChange={e => setNewMemberId(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border-color)',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#f8fafc',
+                    outline: 'none'
+                  }}
+                >
+                  <option value="">-- Choose a member --</option>
+                  {agencyUsers
+                    .filter(au => !projectMembers.some(pm => pm.id === au.id))
+                    .map(au => (
+                      <option key={au.id} value={au.id}>
+                        {au.full_name} ({au.email})
+                      </option>
+                    ))
+                  }
+                </select>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Choose from the registered members of this agency context.</p>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>

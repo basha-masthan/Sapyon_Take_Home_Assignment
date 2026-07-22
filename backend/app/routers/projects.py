@@ -31,22 +31,6 @@ async def list_projects(
     projects = result.scalars().all()
     return projects
 
-@router.get("/agency-users")
-async def list_agency_users(
-    db: AsyncSession = Depends(database.get_db),
-    tenant_ctx: dict = Depends(get_current_tenant)
-):
-    if tenant_ctx["role"] == models.Role.client_user:
-        raise HTTPException(status_code=403, detail="Access denied")
-    
-    result = await db.execute(
-        select(models.User)
-        .join(models.AgencyMembership)
-        .where(models.AgencyMembership.agency_id == tenant_ctx["agency_id"])
-    )
-    users = result.scalars().all()
-    return [{"id": u.id, "email": u.email, "full_name": u.full_name} for u in users]
-
 @router.get("/{project_id}", response_model=schemas.ProjectResponse)
 async def get_project(
     project_id: int,

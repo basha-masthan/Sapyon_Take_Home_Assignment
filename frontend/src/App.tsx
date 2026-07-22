@@ -211,7 +211,7 @@ export default function App() {
       return;
     }
     try {
-      const res = await axios.get(`${API_BASE}/api/projects/agency-users`);
+      const res = await axios.get(`${API_BASE}/api/auth/agency-users`);
       setAgencyUsers(res.data);
     } catch (err) {
       console.error("Failed to load agency users", err);

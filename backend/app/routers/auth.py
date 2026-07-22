@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 from datetime import timedelta
 
 from .. import schemas, models, crud, auth, database
-from ..deps import get_current_user
+from ..deps import get_current_user, get_current_tenant
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -84,3 +84,19 @@ async def get_user_memberships(
                 })
                 
     return agencies_list
+
+@router.get("/agency-users")
+async def list_agency_users(
+    db: AsyncSession = Depends(database.get_db),
+    tenant_ctx: dict = Depends(get_current_tenant)
+):
+    if tenant_ctx["role"] == models.Role.client_user:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    result = await db.execute(
+        select(models.User)
+        .join(models.AgencyMembership)
+        .where(models.AgencyMembership.agency_id == tenant_ctx["agency_id"])
+    )
+    users = result.scalars().all()
+    return [{"id": u.id, "email": u.email, "full_name": u.full_name} for u in users]

@@ -435,16 +435,25 @@ export default function App() {
             <p style={{ color: '#64748b', fontSize: '0.8rem', marginBottom: '12px', textAlign: 'center', fontWeight: 'bold' }}>QUICK LOGIN FOR EVALUATION</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
               <button onClick={() => handleQuickLogin('admin@agencya.com')} className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '8px' }}>
-                Admin A (Agency A)
+                Admin A
               </button>
               <button onClick={() => handleQuickLogin('admin@agencyb.com')} className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '8px' }}>
-                Admin B (Agency B)
+                Admin B
               </button>
               <button onClick={() => handleQuickLogin('member@agencya.com')} className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '8px' }}>
-                Member A (Agency A)
+                Member A1
               </button>
-              <button onClick={() => handleQuickLogin('client@example.com')} className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '8px', color: '#a21caf' }}>
-                Client User (Both Agencies!)
+              <button onClick={() => handleQuickLogin('member2@agencya.com')} className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '8px' }}>
+                Member A2
+              </button>
+              <button onClick={() => handleQuickLogin('member1@agencyb.com')} className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '8px' }}>
+                Member B1
+              </button>
+              <button onClick={() => handleQuickLogin('client2@example.com')} className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '8px', color: '#a21caf' }}>
+                Client 2 (B)
+              </button>
+              <button onClick={() => handleQuickLogin('client@example.com')} className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '8px', color: '#a21caf', gridColumn: 'span 2' }}>
+                Client 1 (Multi-Agency)
               </button>
             </div>
           </div>

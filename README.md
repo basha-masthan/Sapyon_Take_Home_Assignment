@@ -19,6 +19,12 @@ This application is built with a focus on deep data modeling correctness, strict
 ### 1. Database Configuration
 The application is configured to connect to your PostgreSQL database using the `DATABASE_URL` environment variable.
 
+1. Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Open the `.env` file and replace the `DATABASE_URL` with your actual PostgreSQL connection string. 
+
 The connection string should use the async driver (`+asyncpg`) and configure SSL if needed. For example:
 `postgresql+asyncpg://<username>:<password>@<host>/<database>?ssl=require`
 

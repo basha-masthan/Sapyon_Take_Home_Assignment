@@ -115,7 +115,7 @@ export default function App() {
   const [newTimeDuration, setNewTimeDuration] = useState('');
   const [newTimeNote, setNewTimeNote] = useState('');
 
-  const [newFilename, setNewFilename] = useState('');
+  const [newFile, setNewFile] = useState<File | null>(null);
   const [newFileInternal, setNewFileInternal] = useState(false);
 
   const [showAddMember, setShowAddMember] = useState(false);
@@ -346,13 +346,19 @@ export default function App() {
     }
   };
 
-  const handleMockUpload = async (e: React.FormEvent) => {
+  const handleFileUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProject || !selectedTask) return;
+    if (!selectedProject || !selectedTask || !newFile) return;
     try {
-      const res = await axios.post(`${API_BASE}/api/projects/${selectedProject.id}/tasks/${selectedTask.id}/files?filename=${encodeURIComponent(newFilename)}&is_internal=${newFileInternal}`);
+      const formData = new FormData();
+      formData.append('file', newFile);
+      formData.append('is_internal', newFileInternal.toString());
+
+      const res = await axios.post(`${API_BASE}/api/projects/${selectedProject.id}/tasks/${selectedTask.id}/files`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       setFiles([...files, res.data]);
-      setNewFilename('');
+      setNewFile(null);
     } catch (err) {
       console.error(err);
     }
@@ -854,7 +860,7 @@ export default function App() {
                     {files.map(f => (
                       <div key={f.id} style={{ background: 'rgba(255,255,255,0.02)', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '0.8rem', color: '#f8fafc', fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.filename}</span>
+                          <a href={`${API_BASE}/${f.file_path}`} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none' }}>{f.filename}</a>
                           {f.is_internal && <span className="badge badge-internal" style={{ fontSize: '0.6rem' }}>Internal</span>}
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -880,13 +886,11 @@ export default function App() {
                     {files.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>No attachments</p>}
                   </div>
 
-                  <form onSubmit={handleMockUpload} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <form onSubmit={handleFileUpload} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <input 
                       required 
-                      type="text" 
-                      value={newFilename} 
-                      onChange={e => setNewFilename(e.target.value)} 
-                      placeholder="mock-design.png"
+                      type="file" 
+                      onChange={e => setNewFile(e.target.files ? e.target.files[0] : null)} 
                       style={{ fontSize: '0.8rem', padding: '8px 12px' }}
                     />
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -896,7 +900,7 @@ export default function App() {
                           <label htmlFor="fileInternal" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Internal</label>
                         </div>
                       ) : <div />}
-                      <button type="submit" className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>Attach File</button>
+                      <button type="submit" className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem' }} disabled={!newFile}>Upload File</button>
                     </div>
                   </form>
                 </div>

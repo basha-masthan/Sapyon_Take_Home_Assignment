@@ -23,8 +23,11 @@ async def seed():
         user2 = User(email="admin@agencyb.com", full_name="Admin B", password_hash=admin_pass)
         user3 = User(email="member@agencya.com", full_name="Member A", password_hash=admin_pass)
         user4 = User(email="client@example.com", full_name="Client Shared", password_hash=admin_pass)
+        user5 = User(email="member2@agencya.com", full_name="Member A2", password_hash=admin_pass)
+        user6 = User(email="member1@agencyb.com", full_name="Member B1", password_hash=admin_pass)
+        user7 = User(email="client2@example.com", full_name="Client Corp B Shared", password_hash=admin_pass)
         
-        session.add_all([user1, user2, user3, user4])
+        session.add_all([user1, user2, user3, user4, user5, user6, user7])
         await session.flush()
         
         # Create agencies
@@ -39,6 +42,8 @@ async def seed():
             AgencyMembership(user_id=user1.id, agency_id=agency1.id, role=Role.agency_admin),
             AgencyMembership(user_id=user2.id, agency_id=agency2.id, role=Role.agency_admin),
             AgencyMembership(user_id=user3.id, agency_id=agency1.id, role=Role.agency_member),
+            AgencyMembership(user_id=user5.id, agency_id=agency1.id, role=Role.agency_member),
+            AgencyMembership(user_id=user6.id, agency_id=agency2.id, role=Role.agency_member),
         ])
         
         # Create clients
@@ -51,7 +56,8 @@ async def seed():
         # Create client memberships (user4 is a client of both agencies)
         session.add_all([
             ClientMembership(user_id=user4.id, client_id=client1.id),
-            ClientMembership(user_id=user4.id, client_id=client2.id)
+            ClientMembership(user_id=user4.id, client_id=client2.id),
+            ClientMembership(user_id=user7.id, client_id=client2.id)
         ])
         
         # Create projects
@@ -61,8 +67,11 @@ async def seed():
         session.add_all([project1, project2])
         await session.flush()
         
-        # Assign member to project
-        session.add(ProjectMember(project_id=project1.id, user_id=user3.id))
+        session.add_all([
+            ProjectMember(project_id=project1.id, user_id=user3.id),
+            ProjectMember(project_id=project1.id, user_id=user5.id),
+            ProjectMember(project_id=project2.id, user_id=user6.id)
+        ])
         
         # Create tasks
         task1 = Task(project_id=project1.id, title="Client Task A1", is_internal=False)

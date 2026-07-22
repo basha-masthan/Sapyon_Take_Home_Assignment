@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import List, Optional
 from datetime import datetime
+import os
+import time
 
 from .. import schemas, models, database
 from ..deps import get_current_tenant
@@ -190,8 +192,8 @@ async def list_files(
 async def upload_file(
     project_id: int,
     task_id: int,
-    filename: str,
-    is_internal: bool = False,
+    file: UploadFile = File(...),
+    is_internal: bool = Form(False),
     db: AsyncSession = Depends(database.get_db),
     tenant_ctx: dict = Depends(get_current_tenant)
 ):
@@ -200,11 +202,17 @@ async def upload_file(
     if tenant_ctx["role"] == models.Role.client_user:
         is_internal = False # Clients upload client-visible files
 
+    safe_filename = f"{int(time.time())}_{file.filename}"
+    file_path = f"uploads/{safe_filename}"
+    
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+
     db_file = models.TaskFile(
         task_id=task_id,
         uploader_id=tenant_ctx["user"].id,
-        filename=filename,
-        file_path=f"uploads/{filename}",
+        filename=file.filename,
+        file_path=file_path,
         is_internal=is_internal,
         approval_status=models.ApprovalStatus.pending
     )
